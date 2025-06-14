@@ -2,17 +2,19 @@
 
 import React, { useState } from 'react';
 import {
-  Container,
   TextField,
   Button,
   List,
   ListItem,
   ListItemText,
-  Typography,
+  IconButton,
+  Snackbar,
   CircularProgress,
+  Box,
 } from '@mui/material';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
-interface InspirationResult {
+interface Result {
   name: string;
   score: number;
   text: string;
@@ -20,16 +22,14 @@ interface InspirationResult {
 
 export default function SearchPage() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<InspirationResult[]>([]);
+  const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [copiedText, setCopiedText] = useState('');
 
   const handleSearch = async () => {
     if (!query.trim()) return;
     setLoading(true);
-    setError(null);
-    setResults([]);
-
     try {
       const res = await fetch('http://127.0.0.1:5005/search/inspiration', {
         method: 'POST',
@@ -38,55 +38,74 @@ export default function SearchPage() {
         },
         body: JSON.stringify({ query }),
       });
-
       if (!res.ok) throw new Error('请求失败');
-
       const data = await res.json();
-      setResults(data.results || []);
-    } catch (err: any) {
-      setError(err.message || '搜索失败');
+      setResults(data.results);
+    } catch (error) {
+      console.error('搜索请求出错:', error);
+      alert('搜索失败，请检查服务是否启动或网络是否正常');
     } finally {
       setLoading(false);
     }
   };
 
+  const handleCopy = (text: string) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedText(text);
+      setSnackbarOpen(true);
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        灵感搜索
-      </Typography>
+    <Box sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
+      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
+        <TextField
+          fullWidth
+          label="请输入搜索关键词"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSearch();
+            }
+          }}
+        />
+        <Button variant="contained" onClick={handleSearch} disabled={loading}>
+          搜索
+        </Button>
+      </Box>
 
-      <TextField
-        fullWidth
-        label="请输入关键词"
-        variant="outlined"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-      />
-
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleSearch}
-        sx={{ mt: 2, mb: 2 }}
-      >
-        搜索
-      </Button>
-
-      {loading && <CircularProgress />}
-      {error && <Typography color="error">{error}</Typography>}
+      {loading && (
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
+          <CircularProgress />
+        </Box>
+      )}
 
       <List>
         {results.map((item) => (
-          <ListItem key={item.name} alignItems="flex-start" divider>
-            <ListItemText
-              primary={item.text.replace(/^- /g, '').replace(/\n- /g, '\n')}
-              secondary={`相似度评分：${item.score.toFixed(2)} | ID: ${item.name}`}
-            />
+          <ListItem
+            key={item.name}
+            secondaryAction={
+              <IconButton edge="end" aria-label="copy" onClick={() => handleCopy(item.name)}>
+                <ContentCopyIcon />
+              </IconButton>
+            }
+          >
+            <ListItemText primary={item.name} secondary={item.text} />
           </ListItem>
         ))}
       </List>
-    </Container>
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={2000}
+        onClose={handleCloseSnackbar}
+        message={`已复制 "${copiedText}" 到剪贴板`}
+      />
+    </Box>
   );
 }
