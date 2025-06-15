@@ -5,6 +5,7 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 interface Result {
   name: string;
   text: string;
+  score?: number;
 }
 
 interface ResultListProps {
@@ -25,6 +26,13 @@ const ResultList: React.FC<ResultListProps> = ({ results, handleCopy }) => {
           }
         >
           <ListItemText primary={item.name} secondary={item.text} />
+          {
+            item.score !== undefined && (
+              <span style={{ marginLeft: '10px', color: 'gray' }}>
+                {item.score.toFixed(2)}
+              </span>
+            )
+          }
         </ListItem>
       ))}
     </List>
