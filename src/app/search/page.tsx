@@ -1,26 +1,14 @@
 'use client';
 
 import React, { useState } from 'react';
-import {
-  TextField,
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Snackbar,
-  CircularProgress,
-  Box,
-} from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import { Box } from '@mui/material';
+import CopySnackbar from '@/components/CopySnackbar';
+import LoadingIndicator from '@/components/LoadingIndicator';
+import ResultList from '@/components/ResultList';
+import SearchBar from '@/components/SearchBar';
+import { Result } from '@/types';
 
-interface Result {
-  name: string;
-  score: number;
-  text: string;
-}
-
-export default function SearchPage() {
+export default function Page() {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<Result[]>([]);
   const [loading, setLoading] = useState(false);
@@ -62,50 +50,10 @@ export default function SearchPage() {
 
   return (
     <Box sx={{ maxWidth: 600, margin: 'auto', padding: 2 }}>
-      <Box sx={{ display: 'flex', gap: 2, mb: 3 }}>
-        <TextField
-          fullWidth
-          label="请输入搜索关键词"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') {
-              handleSearch();
-            }
-          }}
-        />
-        <Button variant="contained" onClick={handleSearch} disabled={loading}>
-          搜索
-        </Button>
-      </Box>
-
-      {loading && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 2 }}>
-          <CircularProgress />
-        </Box>
-      )}
-
-      <List>
-        {results.map((item) => (
-          <ListItem
-            key={item.name}
-            secondaryAction={
-              <IconButton edge="end" aria-label="copy" onClick={() => handleCopy(item.name)}>
-                <ContentCopyIcon />
-              </IconButton>
-            }
-          >
-            <ListItemText primary={item.name} secondary={item.text} />
-          </ListItem>
-        ))}
-      </List>
-
-      <Snackbar
-        open={snackbarOpen}
-        autoHideDuration={2000}
-        onClose={handleCloseSnackbar}
-        message={`已复制 "${copiedText}" 到剪贴板`}
-      />
+      <SearchBar query={query} setQuery={setQuery} handleSearch={handleSearch} loading={loading} />
+      {loading && <LoadingIndicator />}
+      <ResultList results={results} handleCopy={handleCopy} />
+      <CopySnackbar open={snackbarOpen} message={`已复制 "${copiedText}" 到剪贴板`} onClose={handleCloseSnackbar} />
     </Box>
   );
 }
