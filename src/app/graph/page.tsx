@@ -3,23 +3,11 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import dynamic from 'next/dynamic';
 
+import { computeGraphWithCommunities, GraphNode, GraphLink, RawNode } from '@/utils/graphUtils';
+
+
 // 动态导入 ForceGraph3D，禁用 SSR
 const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false });
-interface RawNode {
-    name: string;
-    text: string;
-    links: string[];
-}
-
-interface GraphNode {
-    id: string;
-    text: string;
-}
-
-interface GraphLink {
-    source: string;
-    target: string;
-}
 
 export default function AutoLayoutForceGraph3D() {
     const fgRef = useRef<any>(null);
@@ -32,26 +20,8 @@ export default function AutoLayoutForceGraph3D() {
         fetch('http://127.0.0.1:5005/nodes')
             .then((res) => res.json())
             .then((data: { nodes: RawNode[] }) => {
-                const nodes: GraphNode[] = data.nodes.map((node) => ({
-                    id: node.name,
-                    text: node.text,
-                }));
-
-                let links: GraphLink[] = [];
-                data.nodes.forEach((node) => {
-                    node.links.forEach((targetName) => {
-                        links.push({ source: node.name, target: targetName });
-                    });
-                });
-
-                links = links.filter(link =>
-                    nodes.some(node => node.id === link.source) &&
-                    nodes.some(node => node.id === link.target)
-                );
-
-                console.log('Fetched nodes:', nodes);
-                console.log('Constructed links:', links);
-                setGraphData({ nodes, links });
+                const result = computeGraphWithCommunities(data.nodes);
+                setGraphData(result);
             })
             .catch((err) => {
                 console.error('Error fetching nodes:', err);
@@ -75,7 +45,7 @@ export default function AutoLayoutForceGraph3D() {
             <ForceGraph3D
                 ref={fgRef}
                 graphData={graphData}
-                nodeLabel="id"
+                nodeLabel={(node) => `${node.id}\n${node.text}`}
                 nodeAutoColorBy="group"
                 onNodeClick={handleNodeClick}
             />
