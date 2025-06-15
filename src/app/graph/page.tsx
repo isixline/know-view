@@ -1,7 +1,10 @@
 "use client";
 
 import React, { useRef, useCallback } from "react";
-import ForceGraph3D from "react-force-graph-3d";
+import dynamic from 'next/dynamic';
+
+// 动态导入 ForceGraph3D，禁用 SSR
+const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false });
 
 const data = {
   nodes: [
