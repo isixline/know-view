@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useRef, useCallback, useEffect, useState } from "react";
+import SpriteText from 'three-spritetext';
 import dynamic from 'next/dynamic';
 
 import { computeGraphWithCommunities, GraphNode, GraphLink, RawNode } from '@/utils/graphUtils';
@@ -21,6 +22,9 @@ export default function AutoLayoutForceGraph3D() {
             .then((res) => res.json())
             .then((data: { nodes: RawNode[] }) => {
                 const result = computeGraphWithCommunities(data.nodes);
+                result.nodes.forEach(node => {
+                    node.name = node.name.replace(/^🛠️ /, '');
+                });
                 setGraphData(result);
             })
             .catch((err) => {
@@ -30,7 +34,7 @@ export default function AutoLayoutForceGraph3D() {
 
     const handleNodeClick = useCallback((node: { x?: number; y?: number; z?: number }) => {
         if (!fgRef.current) return;
-        const distance = 40;
+        const distance = 80;
         const distRatio = 1 + distance / Math.hypot(node.x || 0, node.y || 0, node.z || 0);
 
         fgRef.current.cameraPosition(
@@ -45,8 +49,16 @@ export default function AutoLayoutForceGraph3D() {
             <ForceGraph3D
                 ref={fgRef}
                 graphData={graphData}
-                nodeLabel={(node) => `${node.id}\n${node.text}`}
                 nodeAutoColorBy="group"
+                nodeThreeObject={(node: any) => {
+                    const sprite = new SpriteText(node.name); 
+                    sprite.color = node.color;              
+                    sprite.textHeight = 8;     
+                    return sprite;
+                }}
+                nodeLabel={(node) => `${node.name}\n${node.text}`}
+                linkDirectionalParticles={1}
+                linkDirectionalParticleWidth={1}
                 onNodeClick={handleNodeClick}
             />
         </div>

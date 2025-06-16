@@ -9,6 +9,7 @@ export interface RawNode {
 
 export interface GraphNode {
     id: string;
+    name: string;
     text: string;
     group?: number;
 }
@@ -43,6 +44,7 @@ export function computeGraphWithCommunities(rawNodes: RawNode[]): {
 
     const nodes: GraphNode[] = graph.nodes().map((id) => ({
         id,
+        name: id,
         text: graph.getNodeAttribute(id, 'text'),
         group: communities[id],
     }));
