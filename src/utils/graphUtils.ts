@@ -1,5 +1,4 @@
-// lib/graphUtils.ts
-import Graphology from 'graphology';
+import Graph from 'graphology';
 import louvain from 'graphology-communities-louvain';
 
 export interface RawNode {
@@ -23,7 +22,7 @@ export function computeGraphWithCommunities(rawNodes: RawNode[]): {
     nodes: GraphNode[];
     links: GraphLink[];
 } {
-    const graph = new Graphology();
+    const graph = new Graph({ multi: true });
 
     // 添加节点
     rawNodes.forEach((node) => {
