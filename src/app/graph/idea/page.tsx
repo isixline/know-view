@@ -3,8 +3,8 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import dynamic from 'next/dynamic';
 
-import { computeGraphWithCommunities } from '@/utils/graphUtils';
-import { GraphNode, GraphLink, RawNode } from '@/types/graph';
+import { GraphNode, GraphLink } from '@/types/graph';
+import { getIdeaGraph } from "@/lib/api/graph";
 
 
 // 动态导入 ForceGraph3D，禁用 SSR
@@ -18,10 +18,8 @@ export default function AutoLayoutForceGraph3D() {
     });
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5005/nodes/idea')
-            .then((res) => res.json())
-            .then((data: { nodes: RawNode[] }) => {
-                const result = computeGraphWithCommunities(data.nodes);
+        getIdeaGraph()
+            .then((result) => {
                 setGraphData(result);
             })
             .catch((err) => {

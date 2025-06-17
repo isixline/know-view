@@ -3,9 +3,8 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import SpriteText from 'three-spritetext';
 import dynamic from 'next/dynamic';
-
-import { computeGraphWithCommunities } from '@/utils/graphUtils';
-import { GraphNode, GraphLink, RawNode } from '@/types/graph';
+import { GraphNode, GraphLink } from '@/types/graph';
+import { getTechGraph } from "@/lib/api/graph";
 
 
 // 动态导入 ForceGraph3D，禁用 SSR
@@ -19,18 +18,10 @@ export default function AutoLayoutForceGraph3D() {
     });
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5005/nodes/tech')
-            .then((res) => res.json())
-            .then((data: { nodes: RawNode[] }) => {
-                const result = computeGraphWithCommunities(data.nodes);
-                result.nodes.forEach(node => {
-                    node.name = node.name.replace(/^🛠️ /, '');
-                });
-                setGraphData(result);
+        getTechGraph()
+            .then((data) => {
+                setGraphData(data)
             })
-            .catch((err) => {
-                console.error('Error fetching nodes:', err);
-            });
     }, []);
 
     const handleNodeClick = useCallback((node: { x?: number; y?: number; z?: number }) => {
