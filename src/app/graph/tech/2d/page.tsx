@@ -4,7 +4,8 @@ import React, { useRef, useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 
 import NodeDetails from "@/components/NodeDetails";
-import { computeGraphWithCommunities, RawNode } from "@/utils/graphUtils";
+import { computeGraphWithCommunities } from "@/utils/graphUtils";
+import { RawNode } from "@/types/graph";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 

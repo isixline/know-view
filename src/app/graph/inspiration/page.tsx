@@ -3,7 +3,8 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import dynamic from 'next/dynamic';
 
-import { computeGraphWithCommunities, GraphNode, GraphLink, RawNode } from '@/utils/graphUtils';
+import { computeGraphWithCommunities } from '@/utils/graphUtils';
+import { GraphNode, GraphLink, RawNode } from '@/types/graph';
 
 
 // 动态导入 ForceGraph3D，禁用 SSR

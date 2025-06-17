@@ -4,7 +4,8 @@ import React, { useRef, useCallback, useEffect, useState } from "react";
 import SpriteText from 'three-spritetext';
 import dynamic from 'next/dynamic';
 
-import { computeGraphWithCommunities, GraphNode, GraphLink, RawNode } from '@/utils/graphUtils';
+import { computeGraphWithCommunities } from '@/utils/graphUtils';
+import { GraphNode, GraphLink, RawNode } from '@/types/graph';
 
 
 // 动态导入 ForceGraph3D，禁用 SSR
@@ -51,9 +52,9 @@ export default function AutoLayoutForceGraph3D() {
                 graphData={graphData}
                 nodeAutoColorBy="group"
                 nodeThreeObject={(node: any) => {
-                    const sprite = new SpriteText(node.name); 
-                    sprite.color = node.color;              
-                    sprite.textHeight = 8;     
+                    const sprite = new SpriteText(node.name);
+                    sprite.color = node.color;
+                    sprite.textHeight = 8;
                     return sprite;
                 }}
                 nodeLabel={(node) => `${node.name}\n${node.text}`}
