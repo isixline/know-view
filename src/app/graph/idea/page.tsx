@@ -18,7 +18,7 @@ export default function AutoLayoutForceGraph3D() {
     });
 
     useEffect(() => {
-        fetch('http://127.0.0.1:5005/nodes/inspiration')
+        fetch('http://127.0.0.1:5005/nodes/idea')
             .then((res) => res.json())
             .then((data: { nodes: RawNode[] }) => {
                 const result = computeGraphWithCommunities(data.nodes);

@@ -19,7 +19,7 @@ export default function Page() {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:5005/search/inspiration', {
+      const res = await fetch('http://127.0.0.1:5005/search/idea', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
