@@ -1,9 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { Paper, Typography, IconButton, Collapse } from "@mui/material";
+import { Paper, Typography, IconButton, Collapse, Tooltip } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
+import ContentCopyIcon from "@mui/icons-material/ContentCopy";
+import CheckIcon from "@mui/icons-material/Check";
 
 interface NodeDetailsProps {
     node: any;
@@ -12,10 +14,21 @@ interface NodeDetailsProps {
 
 export default function NodeDetails({ node, open }: NodeDetailsProps) {
     const [collapsed, setCollapsed] = useState(false);
+    const [copied, setCopied] = useState(false);
 
     if (!node || !open) return null;
 
     const toggleCollapse = () => setCollapsed(!collapsed);
+
+    const handleCopy = async () => {
+        try {
+            await navigator.clipboard.writeText(node.name);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch (err) {
+            console.error("copy error", err);
+        }
+    };
 
     return (
         <Paper
@@ -24,7 +37,7 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                 position: "absolute",
                 top: 16,
                 right: 16,
-                padding: collapsed? 4 :32,
+                padding: collapsed ? 4 : 32,
                 width: collapsed ? 36 : 320,
                 overflow: "hidden",
                 userSelect: "text",
@@ -34,9 +47,16 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
             {/* 折叠标题行 */}
             <div style={{ display: "flex", alignItems: "center" }}>
                 {!collapsed && (
-                    <Typography variant="subtitle1" style={{ flex: 1, fontWeight: 500 }}>
-                        {node.name}
-                    </Typography>
+                    <>
+                        <Typography variant="subtitle1" style={{ flex: 1, fontWeight: 500 }}>
+                            {node.name}
+                        </Typography>
+                        <Tooltip title={copied ? "copied" : "copy name"}>
+                            <IconButton onClick={handleCopy} size="small">
+                                {copied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
+                            </IconButton>
+                        </Tooltip>
+                    </>
                 )}
                 <IconButton onClick={toggleCollapse} size="small">
                     {collapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
@@ -60,7 +80,5 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                 </pre>
             </Collapse>
         </Paper>
-
-
     );
 }
