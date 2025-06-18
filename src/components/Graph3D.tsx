@@ -51,15 +51,14 @@ export default function Graph3D({ fetchData, isTextNode }: Props) {
         if (isTextNode) {
             const sprite = new SpriteText(node.name);
             sprite.color = node.color;
-            sprite.textHeight = isSelected ? 12 : 8;
             sprite.material.opacity = isSelected ? 1.0 : 0.6;
             sprite.material.transparent = true;
             return sprite;
         } else {
-            const geometry = new THREE.SphereGeometry(isSelected ? 8 : 4); // 半径放大
+            const geometry = new THREE.SphereGeometry(8); 
             const material = new THREE.MeshBasicMaterial({ color: node.color || 'gray' });
             material.transparent = true;
-            material.opacity = isSelected ? 1 : 0.6; // 0.0 = 全透明，1.0 = 不透明   
+            material.opacity = isSelected ? 1 : 0.6;
             const mesh = new THREE.Mesh(geometry, material);
             return mesh;
         }
