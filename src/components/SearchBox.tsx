@@ -1,98 +1,69 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
-import {
-    TextField,
-    Paper,
-    List,
-    ListItem,
-    ListItemText,
-    ClickAwayListener,
-} from "@mui/material";
+import React, { useMemo } from "react";
+import { Autocomplete, TextField } from "@mui/material";
 import Fuse from "fuse.js";
 import { GraphNode } from "@/types/graph";
 
 interface SearchBoxProps {
-    allNodes: GraphNode[];
-    onSelectNode: (node: GraphNode) => void;
-    match?: (query: string, nodes: GraphNode[]) => GraphNode[];
+  allNodes: GraphNode[];
+  onSelectNode: (node: GraphNode) => void;
+  match?: (query: string, nodes: GraphNode[]) => GraphNode[];
 }
 
-export default function SearchBox({
-    allNodes,
-    onSelectNode,
-    match,
-}: SearchBoxProps) {
-    const [query, setQuery] = useState("");
-    const [focused, setFocused] = useState(false);
+export default function SearchBox({ allNodes, onSelectNode, match }: SearchBoxProps) {
+  // 设置 fuse 实例
+  const fuse = useMemo(() => {
+    return new Fuse(allNodes, {
+      keys: ["name", "text"],
+      threshold: 0.4,
+    });
+  }, [allNodes]);
 
-    // 默认 Fuse 匹配器，只在未传入 match 时使用
-    const fuse = useMemo(() => {
-        return new Fuse(allNodes, {
-            keys: ["name"],
-            threshold: 0.4,
-        });
-    }, [allNodes]);
+  // 自定义 filterOptions：根据 match() 或 fuse 匹配
+  const filterOptions = (options: GraphNode[], { inputValue }: { inputValue: string }) => {
+    const trimmed = inputValue.trim();
+    if (!trimmed) return [];
 
-    // 判断使用哪种匹配方式
-    const results = useMemo(() => {
-        const trimmed = query.trim();
-        if (!trimmed) return [];
+    if (match) {
+      return match(trimmed, allNodes);
+    }
 
-        if (match) {
-            return match(trimmed, allNodes);
-        } else {
-            return fuse.search(trimmed).map((r) => r.item);
-        }
-    }, [query, match, allNodes, fuse]);
+    return fuse.search(trimmed).map((res) => res.item);
+  };
 
-    const handleSelect = (node: GraphNode) => {
-        setQuery(node.name);
-        setFocused(false);
-        onSelectNode(node);
-    };
-
-    return (
-        <ClickAwayListener onClickAway={() => setFocused(false)}>
-            <div
-                style={{
-                    position: "absolute",
-                    top: 20,
-                    left: 20,
-                    zIndex: 1000,
-                    width: 300,
-                }}
-            >
-                <TextField
-                    label="Search"
-                    variant="outlined"
-                    fullWidth
-                    size="small"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    onFocus={() => setFocused(true)}
-                />
-                {focused && results.length > 0 && (
-                    <Paper style={{ maxHeight: 240, overflow: "auto" }}>
-                        <List dense>
-                            {results.map((node) => (
-                                <ListItem
-                                    component="button"
-                                    key={node.id}
-                                    onClick={() => handleSelect(node)}
-                                >
-                                    <ListItemText
-                                        primary={node.name}
-                                        secondary={
-                                            node.text.length > 100 ? node.text.slice(0, 100) + "..." : node.text
-                                        }
-                                    />
-                                </ListItem>
-                            ))}
-                        </List>
-                    </Paper>
-                )}
-            </div>
-        </ClickAwayListener>
-    );
+  return (
+    <Autocomplete
+      options={allNodes}
+      filterOptions={filterOptions}
+      getOptionLabel={(option) => option.name}
+      onChange={(_, value) => {
+        if (value) onSelectNode(value);
+      }}
+      renderInput={(params) => (
+        <TextField {...params} label="Search" size="small" fullWidth />
+      )}
+      renderOption={(props, option) => (
+        <li {...props}>
+          <div>
+            <strong>{option.name}</strong>
+            <br />
+            <span style={{ fontSize: 12, color: "#666" }}>
+              {option.text.length > 100 ? option.text.slice(0, 100) + "..." : option.text}
+            </span>
+          </div>
+        </li>
+      )}
+      sx={{
+        width: 300,
+        position: "absolute",
+        top: 20,
+        left: 20,
+        zIndex: 1000,
+      }}
+      autoHighlight
+      disableClearable
+      size="small"
+    />
+  );
 }
