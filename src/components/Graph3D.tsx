@@ -2,8 +2,10 @@
 
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import SpriteText from 'three-spritetext';
+import * as THREE from 'three'
 import dynamic from 'next/dynamic';
 import { GraphData } from '@/types/graph';
+import NodeDetails from "@/components/NodeDetails";
 
 // 动态导入 ForceGraph3D，禁用 SSR
 const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false });
@@ -19,6 +21,8 @@ export default function Graph3D({ fetchData, isTextNode }: Props) {
         nodes: [],
         links: [],
     });
+    const [selectedNode, setSelectedNode] = useState<any>(null);
+
 
     useEffect(() => {
         fetchData()
@@ -29,7 +33,7 @@ export default function Graph3D({ fetchData, isTextNode }: Props) {
 
     const handleNodeClick = useCallback((node: { x?: number; y?: number; z?: number }) => {
         if (!fgRef.current) return;
-        const distance = 80;
+        const distance = 120;
         const distRatio = 1 + distance / Math.hypot(node.x || 0, node.y || 0, node.z || 0);
 
         fgRef.current.cameraPosition(
@@ -37,7 +41,37 @@ export default function Graph3D({ fetchData, isTextNode }: Props) {
             node, // lookAt
             3000  // ms transition duration
         );
+
+        setSelectedNode(node);
     }, []);
+
+    const getNodeObject = useCallback((node: any) => {
+        const isSelected = selectedNode && node.id === selectedNode.id;
+
+        if (isTextNode) {
+            const sprite = new SpriteText(node.name);
+            sprite.color = node.color;
+            sprite.textHeight = isSelected ? 12 : 8;
+            sprite.material.opacity = isSelected ? 1.0 : 0.6;
+            sprite.material.transparent = true;
+            return sprite;
+        } else {
+            const geometry = new THREE.SphereGeometry(isSelected ? 8 : 4); // 半径放大
+            const material = new THREE.MeshBasicMaterial({ color: node.color || 'gray' });
+            material.transparent = true;
+            material.opacity = isSelected ? 1 : 0.6; // 0.0 = 全透明，1.0 = 不透明   
+            const mesh = new THREE.Mesh(geometry, material);
+            return mesh;
+        }
+    }, [selectedNode, isTextNode]);
+
+    // 获取数据
+    useEffect(() => {
+        fetchData()
+            .then((data) => {
+                setGraphData(data);
+            });
+    }, [fetchData]);
 
     return (
         <div style={{ width: "100%", height: "600px" }}>
@@ -45,17 +79,13 @@ export default function Graph3D({ fetchData, isTextNode }: Props) {
                 ref={fgRef}
                 graphData={graphData}
                 nodeAutoColorBy="group"
-                nodeThreeObject={isTextNode ? (node: any) => {
-                    const sprite = new SpriteText(node.name);
-                    sprite.color = node.color;
-                    sprite.textHeight = 8;
-                    return sprite;
-                } : undefined}
-                nodeLabel={(node) => `${node.name}\n${node.text}`}
+                nodeThreeObject={getNodeObject}
+                nodeLabel={(node) => `${node.name}`}
                 linkDirectionalParticles={1}
                 linkDirectionalParticleWidth={1}
                 onNodeClick={handleNodeClick}
             />
+            <NodeDetails node={selectedNode} open={!!selectedNode} />
         </div>
     );
 }

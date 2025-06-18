@@ -29,10 +29,11 @@ export default function Graph2D({ fetchData }: Props) {
     const handleNodeClick = useCallback((node: any) => {
         if (!fgRef.current || !node) return;
 
-        setSelectedNode(node);
         // 平移视图使节点居中
         fgRef.current.centerAt(node.x, node.y, 1000);
         fgRef.current.zoom(4, 1000);
+
+        setSelectedNode(node);
     }, []);
 
     return (
