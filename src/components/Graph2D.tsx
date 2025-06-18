@@ -3,7 +3,8 @@
 import React, { useRef, useCallback, useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import NodeDetails from "@/components/NodeDetails";
-import { GraphData } from "@/types/graph";
+import { GraphData, GraphNode } from "@/types/graph";
+import SearchBox from "@/components/SearchBox";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 
@@ -36,6 +37,10 @@ export default function Graph2D({ fetchData }: Props) {
         setSelectedNode(node);
     }, []);
 
+    const handleSearch = (node: GraphNode) => {
+        if (node) handleNodeClick(node);
+    }
+
     return (
         <div style={{ width: "100%", height: "600px", position: "relative" }}>
             <ForceGraph2D
@@ -49,6 +54,10 @@ export default function Graph2D({ fetchData }: Props) {
             />
 
             <NodeDetails node={selectedNode} open={!!selectedNode} />
+            <SearchBox
+                allNodes={graphData.nodes}
+                onSelectNode={handleSearch}
+            />
         </div>
     );
 }
