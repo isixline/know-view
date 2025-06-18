@@ -1,35 +1,35 @@
 "use client";
 
 import React, { useRef, useCallback, useEffect, useState } from "react";
+import SpriteText from 'three-spritetext';
 import dynamic from 'next/dynamic';
-
-import { GraphNode, GraphLink } from '@/types/graph';
-import { getIdeaGraph } from "@/lib/api/graph";
-
+import { GraphData } from '@/types/graph';
 
 // 动态导入 ForceGraph3D，禁用 SSR
 const ForceGraph3D = dynamic(() => import('react-force-graph-3d'), { ssr: false });
 
-export default function AutoLayoutForceGraph3D() {
+interface Props {
+    fetchData: () => Promise<GraphData>;
+    isTextNode?: boolean;
+}
+
+export default function Graph3D({ fetchData, isTextNode }: Props) {
     const fgRef = useRef<any>(null);
-    const [graphData, setGraphData] = useState<{ nodes: GraphNode[]; links: GraphLink[] }>({
+    const [graphData, setGraphData] = useState<GraphData>({
         nodes: [],
         links: [],
     });
 
     useEffect(() => {
-        getIdeaGraph()
-            .then((result) => {
-                setGraphData(result);
+        fetchData()
+            .then((data) => {
+                setGraphData(data)
             })
-            .catch((err) => {
-                console.error('Error fetching nodes:', err);
-            });
-    }, []);
+    }, [fetchData]);
 
     const handleNodeClick = useCallback((node: { x?: number; y?: number; z?: number }) => {
         if (!fgRef.current) return;
-        const distance = 40;
+        const distance = 80;
         const distRatio = 1 + distance / Math.hypot(node.x || 0, node.y || 0, node.z || 0);
 
         fgRef.current.cameraPosition(
@@ -44,8 +44,16 @@ export default function AutoLayoutForceGraph3D() {
             <ForceGraph3D
                 ref={fgRef}
                 graphData={graphData}
-                nodeLabel={(node) => `${node.id}\n${node.text}`}
                 nodeAutoColorBy="group"
+                nodeThreeObject={isTextNode ? (node: any) => {
+                    const sprite = new SpriteText(node.name);
+                    sprite.color = node.color;
+                    sprite.textHeight = 8;
+                    return sprite;
+                } : undefined}
+                nodeLabel={(node) => `${node.name}\n${node.text}`}
+                linkDirectionalParticles={1}
+                linkDirectionalParticleWidth={1}
                 onNodeClick={handleNodeClick}
             />
         </div>
