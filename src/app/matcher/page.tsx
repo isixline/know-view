@@ -6,11 +6,12 @@ import CopySnackbar from '@/components/CopySnackbar';
 import LoadingIndicator from '@/components/LoadingIndicator';
 import ResultList from '@/components/ResultList';
 import SearchBar from '@/components/SearchBar';
-import { Result } from '@/types';
+import { matchIdea } from '@/lib/api/matcher';
+import { MatchedItem } from '@/types/matcher';
 
 export default function Page() {
   const [query, setQuery] = useState('');
-  const [results, setResults] = useState<Result[]>([]);
+  const [results, setResults] = useState<MatchedItem[]>([]);
   const [loading, setLoading] = useState(false);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [copiedText, setCopiedText] = useState('');
@@ -19,19 +20,10 @@ export default function Page() {
     if (!query.trim()) return;
     setLoading(true);
     try {
-      const res = await fetch('http://127.0.0.1:5005/matcher/idea', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-      });
-      if (!res.ok) throw new Error('请求失败');
-      const data = await res.json();
-      setResults(data.results);
+      const matchedItems = await matchIdea(query);
+      setResults(matchedItems);
     } catch (error) {
-      console.error('搜索请求出错:', error);
-      alert('搜索失败，请检查服务是否启动或网络是否正常');
+      alert('search error: ' + error);
     } finally {
       setLoading(false);
     }
