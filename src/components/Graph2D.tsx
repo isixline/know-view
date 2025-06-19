@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import NodeDetails from "@/components/NodeDetails";
 import { GraphData, GraphNode } from "@/types/graph";
 import SearchBox from "@/components/SearchBox";
+import TopLeftPanel from "./TopLeftPanel";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 
@@ -54,10 +55,12 @@ export default function Graph2D({ fetchData }: Props) {
             />
 
             <NodeDetails node={selectedNode} open={!!selectedNode} />
-            <SearchBox
-                allNodes={graphData.nodes}
-                onSelectNode={handleSearch}
-            />
-        </div>
+            <TopLeftPanel>
+                <SearchBox
+                    allNodes={graphData.nodes}
+                    onSelectNode={handleSearch}
+                />
+            </TopLeftPanel>
+        </div >
     );
 }

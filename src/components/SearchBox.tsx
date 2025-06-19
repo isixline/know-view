@@ -54,13 +54,6 @@ export default function SearchBox({ allNodes, onSelectNode, match }: SearchBoxPr
                     </div>
                 </li>
             )}
-            sx={{
-                width: 300,
-                position: "absolute",
-                top: 16,
-                left: 16,
-                zIndex: 1000,
-            }}
             autoHighlight
             disableClearable
             size="small"
