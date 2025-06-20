@@ -6,7 +6,7 @@ interface MatchedResult {
 }
 
 export async function matchIdea(query: string): Promise<MatchedItem[]> {
-    return fetcher<MatchedResult>('http://127.0.0.1:5005/nodes/tech',
+    return fetcher<MatchedResult>('http://127.0.0.1:5005/matcher/idea',
         {
             method: 'POST',
             headers: {

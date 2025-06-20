@@ -6,14 +6,17 @@ import NodeDetails from "@/components/NodeDetails";
 import { GraphData, GraphNode } from "@/types/graph";
 import SearchBox from "@/components/SearchBox";
 import TopLeftPanel from "./TopLeftPanel";
+import MatchBox from "./MatchBox";
+import { MatchedItem } from "@/types/matcher";
 
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 
 interface Props {
     fetchData: () => Promise<GraphData>;
+    matchData?: (query: string) => Promise<MatchedItem[]>;
 }
 
-export default function Graph2D({ fetchData }: Props) {
+export default function Graph2D({ fetchData, matchData }: Props) {
     const fgRef = useRef<any>(null);
     const [graphData, setGraphData] = useState<GraphData>({
         nodes: [],
@@ -60,6 +63,9 @@ export default function Graph2D({ fetchData }: Props) {
                     allNodes={graphData.nodes}
                     onSelectNode={handleSearch}
                 />
+                {matchData && (
+                    <MatchBox matchData={matchData} />
+                )}
             </TopLeftPanel>
         </div >
     );
