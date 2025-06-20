@@ -23,6 +23,8 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
             sx={{
                 maxHeight: "80vh",
                 overflowY: "auto",
+                bgcolor: "rgba(255, 255, 255, 0.5)",
+                backdropFilter: "blur(8px)",
             }}
         >
             {results.map((item) => (

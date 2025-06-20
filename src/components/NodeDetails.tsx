@@ -30,8 +30,11 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                 overflow: "hidden",
                 userSelect: "text",
                 boxSizing: "border-box",
+                backgroundColor: "rgba(255, 255, 255, 0.5)",
+                backdropFilter: "blur(8px)",
             }}
         >
+
             {/* 折叠标题行 */}
             <div style={{ display: "flex", alignItems: "center" }}>
                 {!collapsed && (
@@ -46,7 +49,6 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                     {collapsed ? <ExpandMoreIcon fontSize="small" /> : <ExpandLessIcon fontSize="small" />}
                 </IconButton>
             </div>
-
             {/* 折叠内容区 */}
             <Collapse in={!collapsed}>
                 <pre
