@@ -45,6 +45,13 @@ export default function Graph2D({ fetchData, matchData }: Props) {
         if (node) handleNodeClick(node);
     }
 
+    const handleLocation = (name: string) => {
+        const node = graphData.nodes.find((n) => n.name === name);
+        if (node) {
+            handleNodeClick(node);
+        }
+    }
+
     return (
         <div style={{ width: "100%", height: "600px", position: "relative" }}>
             <ForceGraph2D
@@ -61,10 +68,10 @@ export default function Graph2D({ fetchData, matchData }: Props) {
             <TopLeftPanel>
                 <SearchBox
                     allNodes={graphData.nodes}
-                    onSelectNode={handleSearch}
+                    onSelect={handleSearch}
                 />
                 {matchData && (
-                    <MatchBox matchData={matchData} />
+                    <MatchBox matchData={matchData} onLocation={handleLocation} />
                 )}
             </TopLeftPanel>
         </div >

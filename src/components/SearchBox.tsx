@@ -8,11 +8,11 @@ import { truncateText } from "@/utils/textUtils";
 
 interface SearchBoxProps {
     allNodes: GraphNode[];
-    onSelectNode: (node: GraphNode) => void;
+    onSelect: (node: GraphNode) => void;
     match?: (query: string, nodes: GraphNode[]) => GraphNode[];
 }
 
-export default function SearchBox({ allNodes, onSelectNode, match }: SearchBoxProps) {
+export default function SearchBox({ allNodes, onSelect, match }: SearchBoxProps) {
     // 设置 fuse 实例
     const fuse = useMemo(() => {
         return new Fuse(allNodes, {
@@ -38,7 +38,7 @@ export default function SearchBox({ allNodes, onSelectNode, match }: SearchBoxPr
             filterOptions={filterOptions}
             getOptionLabel={(option) => option.name}
             onChange={(_, value) => {
-                if (value) onSelectNode(value);
+                if (value) onSelect(value);
             }}
             renderInput={(params) => (
                 <TextField {...params} label="Search" size="small" fullWidth />

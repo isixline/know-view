@@ -7,9 +7,10 @@ import CollapsibleSection from "@/components/CollapsibleSection";
 
 interface MatchBoxProps {
   matchData: (query: string) => Promise<MatchedItem[]>;
+  onLocation?: (name: string) => void;
 }
 
-export default function MatchBox({ matchData }: MatchBoxProps) {
+export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<MatchedItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -54,7 +55,7 @@ export default function MatchBox({ matchData }: MatchBoxProps) {
 
       {results.length > 0 && (
         <CollapsibleSection>
-          <MatchResultList results={results} />
+          <MatchResultList results={results} onLocation={onLocation} />
         </CollapsibleSection>
       )}
     </div>
