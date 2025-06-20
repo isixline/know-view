@@ -5,9 +5,11 @@ import { Paper, Typography, IconButton, Collapse } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import CopyButton from "@/components/CopyButton";
+import { GraphNode } from "@/types/graph";
+import LinksSection from "@/components/LinksSection";
 
 interface NodeDetailsProps {
-    node: any;
+    node: GraphNode;
     open: boolean;
 }
 
@@ -51,17 +53,18 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
             <Collapse in={!collapsed}>
                 <pre
                     style={{
+                        fontSize: 12,
                         whiteSpace: "pre-wrap",
                         wordBreak: "break-word",
-                        margin: 0,
-                        fontSize: 12,
                         overflowY: "auto",
+                        margin: 0,
+                        paddingTop: 16,
                         maxHeight: "60vh",
-                        paddingTop: 8,
                     }}
                 >
                     {node.text}
                 </pre>
+                {node.links && <LinksSection links={node.links} />}
             </Collapse>
         </Paper>
     );

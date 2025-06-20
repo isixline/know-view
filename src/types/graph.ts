@@ -8,6 +8,7 @@ export interface GraphNode {
     id: string;
     name: string;
     text: string;
+    links?: string[]
     group?: number;
 }
 

@@ -33,7 +33,7 @@ export function computeGraphWithCommunities(rawNodes: RawNode[]): {
 
     // 添加节点
     rawNodes.forEach((node) => {
-        graph.addNode(node.name, { text: node.text });
+        graph.addNode(node.name, { text: node.text, links: node.links });
     });
 
     // 添加边
@@ -53,6 +53,7 @@ export function computeGraphWithCommunities(rawNodes: RawNode[]): {
         id,
         name: id,
         text: graph.getNodeAttribute(id, 'text'),
+        links: graph.getNodeAttribute(id, 'links') || [],
         group: communities[id],
     }));
 
