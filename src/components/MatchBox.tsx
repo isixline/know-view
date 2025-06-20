@@ -3,6 +3,7 @@ import { TextField } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import MatchResultList from "@/components/MatchResultList";
+import CollapsibleSection from "@/components/CollapsibleSection";
 
 interface MatchBoxProps {
   matchData: (query: string) => Promise<MatchedItem[]>;
@@ -51,7 +52,11 @@ export default function MatchBox({ matchData }: MatchBoxProps) {
 
       {loading && <LoadingIndicator />}
 
-      {results && <MatchResultList results={results} />}
+      {results.length > 0 && (
+        <CollapsibleSection>
+          <MatchResultList results={results} />
+        </CollapsibleSection>
+      )}
     </div>
   );
 }
