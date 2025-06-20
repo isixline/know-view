@@ -21,10 +21,9 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
         <List
             dense
             sx={{
-                maxHeight: "80vh",
+                maxHeight: "75vh",
                 overflowY: "auto",
-                bgcolor: "rgba(255, 255, 255, 0.5)",
-                backdropFilter: "blur(8px)",
+                bgcolor: "rgba(255, 255, 255)",
             }}
         >
             {results.map((item) => (

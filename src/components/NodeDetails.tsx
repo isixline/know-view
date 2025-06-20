@@ -30,8 +30,6 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                 overflow: "hidden",
                 userSelect: "text",
                 boxSizing: "border-box",
-                backgroundColor: "rgba(255, 255, 255, 0.5)",
-                backdropFilter: "blur(8px)",
             }}
         >
 
