@@ -1,11 +1,10 @@
 "use client";
 
 import React, { useState } from "react";
-import { Paper, Typography, IconButton, Collapse, Tooltip } from "@mui/material";
+import { Paper, Typography, IconButton, Collapse } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import ContentCopyIcon from "@mui/icons-material/ContentCopy";
-import CheckIcon from "@mui/icons-material/Check";
+import CopyButton from "@/components/CopyButton";
 
 interface NodeDetailsProps {
     node: any;
@@ -14,21 +13,10 @@ interface NodeDetailsProps {
 
 export default function NodeDetails({ node, open }: NodeDetailsProps) {
     const [collapsed, setCollapsed] = useState(false);
-    const [copied, setCopied] = useState(false);
 
     if (!node || !open) return null;
 
     const toggleCollapse = () => setCollapsed(!collapsed);
-
-    const handleCopy = async () => {
-        try {
-            await navigator.clipboard.writeText(node.name);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 1500);
-        } catch (err) {
-            console.error("copy error", err);
-        }
-    };
 
     return (
         <Paper
@@ -51,11 +39,7 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                         <Typography variant="subtitle1" style={{ flex: 1, fontWeight: 500 }}>
                             {node.name}
                         </Typography>
-                        <Tooltip title={copied ? "copied" : "copy name"}>
-                            <IconButton onClick={handleCopy} size="small">
-                                {copied ? <CheckIcon fontSize="small" /> : <ContentCopyIcon fontSize="small" />}
-                            </IconButton>
-                        </Tooltip>
+                        <CopyButton text={node.name} tooltip="Copy name" />
                     </>
                 )}
                 <IconButton onClick={toggleCollapse} size="small">
