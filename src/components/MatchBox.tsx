@@ -49,6 +49,7 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
+        autoComplete="off"
       />
 
       {loading && <LoadingIndicator />}
