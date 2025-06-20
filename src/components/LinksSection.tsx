@@ -22,7 +22,7 @@ export default function LinksSection({ links }: LinksSectionProps) {
 
     return (
         <div>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div style={{ display: "flex", justifyContent: "center", marginTop: 8 }}>
                 <Tooltip title={open ? "Hide links" : "Show links"}>
                     <IconButton
                         onClick={toggle}

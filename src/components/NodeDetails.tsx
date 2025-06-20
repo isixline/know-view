@@ -58,7 +58,7 @@ export default function NodeDetails({ node, open }: NodeDetailsProps) {
                         wordBreak: "break-word",
                         overflowY: "auto",
                         margin: 0,
-                        paddingTop: 16,
+                        marginTop: 16,
                         maxHeight: "60vh",
                     }}
                 >
