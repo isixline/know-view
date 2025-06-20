@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { TextField } from "@mui/material";
+import { IconButton, InputAdornment, TextField } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import MatchResultList from "@/components/MatchResultList";
 import CollapsibleSection from "@/components/CollapsibleSection";
+import ClearIcon from "@mui/icons-material/Clear";
 
 interface MatchBoxProps {
   matchData: (query: string) => Promise<MatchedItem[]>;
@@ -40,6 +41,11 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
     }
   };
 
+  const handleClear = () => {
+    setQuery("");
+    setResults([]);
+  }
+
   return (
     <div>
       <TextField
@@ -50,6 +56,20 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
         autoComplete="off"
+        slotProps={{
+          input: {
+            endAdornment: query && (
+              <InputAdornment position="end">
+                <IconButton
+                  size="small"
+                  onClick={handleClear}
+                >
+                  <ClearIcon fontSize="small" />
+                </IconButton>
+              </InputAdornment>
+            ),
+          },
+        }}
       />
 
       {loading && <LoadingIndicator />}
