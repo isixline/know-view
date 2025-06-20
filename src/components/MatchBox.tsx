@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { TextField, List, ListItem, ListItemText, Typography } from "@mui/material";
+import { TextField } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
 import LoadingIndicator from "@/components/LoadingIndicator";
+import MatchResultList from "@/components/MatchResultList";
 
 interface MatchBoxProps {
   matchData: (query: string) => Promise<MatchedItem[]>;
@@ -11,11 +12,9 @@ export default function MatchBox({ matchData }: MatchBoxProps) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<MatchedItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
-      setError(null);
       setResults([]);
 
       const trimmedQuery = query.trim();
@@ -30,8 +29,8 @@ export default function MatchBox({ matchData }: MatchBoxProps) {
           setResults(data);
         })
         .catch((err) => {
-          console.error("Search error:", err);
-          setError("Failed to fetch results");
+          console.error("match error:", err);
+          alert("match error: " + err.message);
         })
         .finally(() => {
           setLoading(false);
@@ -49,29 +48,10 @@ export default function MatchBox({ matchData }: MatchBoxProps) {
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
       />
+
       {loading && <LoadingIndicator />}
 
-      {error && (
-        <Typography variant="body2" color="error" sx={{ mt: 1 }}>
-          {error}
-        </Typography>
-      )}
-      <List
-        dense
-        sx={{
-          maxHeight: "80vh",
-          overflowY: "auto",
-        }}
-      >
-        {results.map(({ name, text, score }) => (
-          <ListItem key={name} divider>
-            <ListItemText
-              primary={`${name} (${score.toFixed(2)})`}
-              secondary={text}
-            />
-          </ListItem>
-        ))}
-      </List>
+      {results && <MatchResultList results={results} />}
     </div>
   );
 }
