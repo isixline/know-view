@@ -37,6 +37,22 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
                 if (onLocation && selectedItem) {
                     onLocation(selectedItem.name);
                 }
+            } else if (
+                (e.key === 'c' || e.key === 'C') &&
+                (e.metaKey || e.ctrlKey) // Command(Mac) 或 Ctrl(Win)
+            ) {
+                e.preventDefault();
+                const selectedItem = results[selectedIndex];
+                if (selectedItem) {
+                    // 复制选中项的 name 到剪贴板
+                    navigator.clipboard.writeText(selectedItem.name)
+                        .then(() => {
+                            console.log('Copied to clipboard:', selectedItem.name);
+                        })
+                        .catch(err => {
+                            console.error('Failed to copy: ', err);
+                        });
+                }
             }
         };
 
@@ -50,7 +66,6 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
         listEl?.focus();
     }, [results]);
 
-    // 自动滚动选中项
     useEffect(() => {
         const currentItem = itemRefs.current[selectedIndex];
         currentItem?.scrollIntoView({ behavior: "smooth", block: "nearest" });
