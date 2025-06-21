@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { IconButton, InputAdornment, TextField } from "@mui/material";
+import { IconButton, InputAdornment } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
 import LoadingIndicator from "@/components/LoadingIndicator";
 import MatchResultList from "@/components/MatchResultList";
 import CollapsibleSection from "@/components/CollapsibleSection";
 import ClearIcon from "@mui/icons-material/Clear";
+import AutoGrowTextField from "@/components/AutoGrowTextField";
 
 interface MatchBoxProps {
   matchData: (query: string) => Promise<MatchedItem[]>;
@@ -50,7 +51,7 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
 
   return (
     <div>
-      <TextField
+      <AutoGrowTextField
         label="Match"
         size="small"
         fullWidth
