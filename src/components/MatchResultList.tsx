@@ -8,7 +8,7 @@ import {
     IconButton,
 } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
-import CopyButton from "@/components/CopyButton";
+import CopyButton, { CopyButtonHandle } from "./CopyButton";
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 
 interface MatchResultListProps {
@@ -20,6 +20,8 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
     const [selectedIndex, setSelectedIndex] = useState(0);
     const listRef = useRef<HTMLUListElement>(null);
     const itemRefs = useRef<(HTMLLIElement | null)[]>([]); // for scrollIntoView
+    const copyRefs = useRef<(CopyButtonHandle | null)[]>([]);
+
 
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -42,17 +44,7 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
                 (e.metaKey || e.ctrlKey) // Command(Mac) 或 Ctrl(Win)
             ) {
                 e.preventDefault();
-                const selectedItem = results[selectedIndex];
-                if (selectedItem) {
-                    // 复制选中项的 name 到剪贴板
-                    navigator.clipboard.writeText(selectedItem.name)
-                        .then(() => {
-                            console.log('Copied to clipboard:', selectedItem.name);
-                        })
-                        .catch(err => {
-                            console.error('Failed to copy: ', err);
-                        });
-                }
+                copyRefs.current[selectedIndex]?.copy();
             }
         };
 
@@ -112,7 +104,9 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
                                             <LocationOnIcon fontSize="small" />
                                         </IconButton>
                                     )}
-                                    <CopyButton text={item.name} />
+                                    <CopyButton
+                                        text={item.name}
+                                        ref={(el: CopyButtonHandle | null) => { copyRefs.current[index] = el; }} />
                                 </div>
                             </Box>
                         }
