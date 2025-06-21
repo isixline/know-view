@@ -17,7 +17,9 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
   const [loading, setLoading] = useState(false);
 
   const handleKeyDown = async (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+
       setResults([]);
 
       const trimmedQuery = query.trim();
@@ -52,6 +54,7 @@ export default function MatchBox({ matchData, onLocation }: MatchBoxProps) {
         label="Match"
         size="small"
         fullWidth
+        multiline
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         onKeyDown={handleKeyDown}
