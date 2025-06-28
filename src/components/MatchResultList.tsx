@@ -1,15 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import {
     List,
-    ListItem,
-    ListItemText,
-    Box,
-    Typography,
-    IconButton,
 } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
-import CopyButton, { CopyButtonHandle } from "./CopyButton";
-import LocationOnIcon from '@mui/icons-material/LocationOn';
+import MatchResultListItem from "@/components/MatchResultListItem";
 
 interface MatchResultListProps {
     results: MatchedItem[];
@@ -19,29 +13,29 @@ interface MatchResultListProps {
 export default function MatchResultList({ results, onLocation }: MatchResultListProps) {
     const [selectedIndex, setSelectedIndex] = useState(0);
     const listRef = useRef<HTMLUListElement>(null);
-    const itemRefs = useRef<(HTMLLIElement | null)[]>([]); // for scrollIntoView
-    const copyRefs = useRef<(CopyButtonHandle | null)[]>([]);
+    const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
+    const copyRefs = useRef<(any | null)[]>([]); // CopyButtonHandle
 
-
+    // 监听键盘事件
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!results.length) return;
 
-            if (e.key === 'ArrowUp') {
+            if (e.key === "ArrowUp") {
                 e.preventDefault();
-                setSelectedIndex(prev => Math.max(prev - 1, 0));
-            } else if (e.key === 'ArrowDown') {
+                setSelectedIndex((prev) => Math.max(prev - 1, 0));
+            } else if (e.key === "ArrowDown") {
                 e.preventDefault();
-                setSelectedIndex(prev => Math.min(prev + 1, results.length - 1));
-            } else if (e.key === 'Enter') {
+                setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
+            } else if (e.key === "Enter") {
                 e.preventDefault();
                 const selectedItem = results[selectedIndex];
                 if (onLocation && selectedItem) {
                     onLocation(selectedItem.name);
                 }
             } else if (
-                (e.key === 'c' || e.key === 'C') &&
-                (e.metaKey || e.ctrlKey) // Command(Mac) 或 Ctrl(Win)
+                (e.key === "c" || e.key === "C") &&
+                (e.metaKey || e.ctrlKey)
             ) {
                 e.preventDefault();
                 copyRefs.current[selectedIndex]?.copy();
@@ -49,15 +43,16 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
         };
 
         const listEl = listRef.current;
-        listEl?.addEventListener('keydown', handleKeyDown);
-        return () => listEl?.removeEventListener('keydown', handleKeyDown);
+        listEl?.addEventListener("keydown", handleKeyDown);
+        return () => listEl?.removeEventListener("keydown", handleKeyDown);
     }, [results, selectedIndex, onLocation]);
 
+    // 结果变化自动focus
     useEffect(() => {
-        const listEl = listRef.current;
-        listEl?.focus();
+        listRef.current?.focus();
     }, [results]);
 
+    // 选中项滚动可见
     useEffect(() => {
         const currentItem = itemRefs.current[selectedIndex];
         currentItem?.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -76,47 +71,14 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
             }}
         >
             {results.map((item, index) => (
-                <ListItem
+                <MatchResultListItem
                     key={item.name}
-                    divider
-                    component="li"
-                    ref={(el: HTMLLIElement | null) => {
-                        itemRefs.current[index] = el;
-                    }}
-                    sx={{
-                        bgcolor: index === selectedIndex ? 'action.selected' : 'inherit',
-                    }}
-                    data-selected={index === selectedIndex}
-                >
-                    <ListItemText
-                        primary={
-                            <Box display="flex" justifyContent="space-between" alignItems="center">
-                                <Typography variant="body2" fontWeight={500}>
-                                    {item.name} ({item.score.toFixed(2)})
-                                </Typography>
-                                <div>
-                                    {onLocation && (
-                                        <IconButton
-                                            edge="end"
-                                            size="small"
-                                            onClick={() => onLocation(item.name)}
-                                        >
-                                            <LocationOnIcon fontSize="small" />
-                                        </IconButton>
-                                    )}
-                                    <CopyButton
-                                        text={item.name}
-                                        ref={(el: CopyButtonHandle | null) => { copyRefs.current[index] = el; }} />
-                                </div>
-                            </Box>
-                        }
-                        secondary={
-                            <Typography variant="body2" color="text.secondary">
-                                {item.text}
-                            </Typography>
-                        }
-                    />
-                </ListItem>
+                    item={item}
+                    selected={index === selectedIndex}
+                    onLocation={onLocation}
+                    refCallback={(el) => { itemRefs.current[index] = el; }}
+                    copyRefCallback={(el) => { copyRefs.current[index] = el; }}
+                />
             ))}
         </List>
     );
