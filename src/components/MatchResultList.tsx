@@ -1,7 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import {
-    List,
-} from "@mui/material";
+import { List } from "@mui/material";
 import { MatchedItem } from "@/types/matcher";
 import MatchResultListItem from "@/components/MatchResultListItem";
 
@@ -14,9 +12,7 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
     const [selectedIndex, setSelectedIndex] = useState(0);
     const listRef = useRef<HTMLUListElement>(null);
     const itemRefs = useRef<(HTMLLIElement | null)[]>([]);
-    const copyRefs = useRef<(any | null)[]>([]); // CopyButtonHandle
 
-    // 监听键盘事件
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
             if (!results.length) return;
@@ -27,35 +23,23 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
             } else if (e.key === "ArrowDown") {
                 e.preventDefault();
                 setSelectedIndex((prev) => Math.min(prev + 1, results.length - 1));
-            } else if (e.key === "Enter") {
-                e.preventDefault();
-                const selectedItem = results[selectedIndex];
-                if (onLocation && selectedItem) {
-                    onLocation(selectedItem.name);
-                }
-            } else if (
-                (e.key === "c" || e.key === "C") &&
-                (e.metaKey || e.ctrlKey)
-            ) {
-                e.preventDefault();
-                copyRefs.current[selectedIndex]?.copy();
             }
         };
 
         const listEl = listRef.current;
         listEl?.addEventListener("keydown", handleKeyDown);
         return () => listEl?.removeEventListener("keydown", handleKeyDown);
-    }, [results, selectedIndex, onLocation]);
+    }, [results]);
 
-    // 结果变化自动focus
     useEffect(() => {
         listRef.current?.focus();
     }, [results]);
 
-    // 选中项滚动可见
     useEffect(() => {
-        const currentItem = itemRefs.current[selectedIndex];
-        currentItem?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        itemRefs.current[selectedIndex]?.scrollIntoView({
+            behavior: "smooth",
+            block: "nearest",
+        });
     }, [selectedIndex]);
 
     return (
@@ -66,7 +50,7 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
             sx={{
                 maxHeight: "75vh",
                 overflowY: "auto",
-                bgcolor: "rgba(255, 255, 255)",
+                bgcolor: "white",
                 outline: "none",
             }}
         >
@@ -76,8 +60,9 @@ export default function MatchResultList({ results, onLocation }: MatchResultList
                     item={item}
                     selected={index === selectedIndex}
                     onLocation={onLocation}
-                    refCallback={(el) => { itemRefs.current[index] = el; }}
-                    copyRefCallback={(el) => { copyRefs.current[index] = el; }}
+                    refCallback={(el) => {
+                        itemRefs.current[index] = el;
+                    }}
                 />
             ))}
         </List>
